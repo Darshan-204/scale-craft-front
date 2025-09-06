@@ -1,78 +1,12 @@
-import { useState, useMemo } from 'react';
 import { ArrowRight, Sparkles, ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Navigation } from '@/components/layout/Navigation';
 import { ProductCard } from '@/components/products/ProductCard';
-import { ProductFilters } from '@/components/products/ProductFilters';
 import { mockProducts } from '@/data/mockProducts';
-import { FilterOptions, Product } from '@/types';
 import heroImage from '@/assets/hero-image.jpg';
 
 const Index = () => {
-  const [filters, setFilters] = useState<FilterOptions>({});
-  
-  // Get unique categories from products
-  const categories = useMemo(() => {
-    const cats = mockProducts.map(p => p.category);
-    return [...new Set(cats)];
-  }, []);
-
-  // Filter and sort products based on current filters
-  const filteredProducts = useMemo(() => {
-    let filtered = [...mockProducts];
-
-    // Apply filters
-    if (filters.category) {
-      filtered = filtered.filter(p => p.category === filters.category);
-    }
-
-    if (filters.priceRange) {
-      filtered = filtered.filter(p => 
-        p.price >= filters.priceRange!.min && p.price <= filters.priceRange!.max
-      );
-    }
-
-    if (filters.inStock) {
-      filtered = filtered.filter(p => p.inStock);
-    }
-
-    if (filters.featured) {
-      filtered = filtered.filter(p => p.featured);
-    }
-
-    // Apply sorting
-    if (filters.sortBy) {
-      filtered.sort((a, b) => {
-        let aVal: any, bVal: any;
-        
-        switch (filters.sortBy) {
-          case 'name':
-            aVal = a.name;
-            bVal = b.name;
-            break;
-          case 'price':
-            aVal = a.price;
-            bVal = b.price;
-            break;
-          case 'rating':
-            aVal = a.rating || 0;
-            bVal = b.rating || 0;
-            break;
-          default:
-            return 0;
-        }
-
-        if (filters.sortOrder === 'desc') {
-          return bVal > aVal ? 1 : -1;
-        }
-        return aVal > bVal ? 1 : -1;
-      });
-    }
-
-    return filtered;
-  }, [filters]);
-
   const featuredProducts = mockProducts.filter(p => p.featured);
 
   return (
@@ -108,14 +42,18 @@ const Index = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-black hover:bg-white/90">
-              Shop Now
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-black">
-              <ShoppingBag className="mr-2 h-4 w-4" />
-              Browse Categories
-            </Button>
+            <Link to="/products">
+              <Button size="lg" className="bg-white text-black hover:bg-white/90">
+                Shop Now
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+            <Link to="/products">
+              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-black">
+                <ShoppingBag className="mr-2 h-4 w-4" />
+                Browse Categories
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -135,56 +73,14 @@ const Index = () => {
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* All Products with Filters */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">All Products</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Explore our complete collection with advanced filtering options to find exactly what you're looking for.
-            </p>
-          </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Filters Sidebar */}
-            <div className="lg:col-span-1">
-              <ProductFilters
-                filters={filters}
-                onFiltersChange={setFilters}
-                categories={categories}
-              />
-            </div>
-            
-            {/* Products Grid */}
-            <div className="lg:col-span-3">
-              <div className="flex justify-between items-center mb-6">
-                <p className="text-muted-foreground">
-                  Showing {filteredProducts.length} of {mockProducts.length} products
-                </p>
-              </div>
-              
-              {filteredProducts.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <ShoppingBag className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">No products found</h3>
-                  <p className="text-muted-foreground mb-4">
-                    Try adjusting your filters to see more products.
-                  </p>
-                  <Button onClick={() => setFilters({})}>
-                    Clear Filters
-                  </Button>
-                </div>
-              )}
-            </div>
+          <div className="text-center mt-12">
+            <Link to="/products">
+              <Button size="lg">
+                View All Products
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
